@@ -85,7 +85,15 @@
                 "VpcId": {
                     "Ref": "VpcId"
                 },
-                "GroupDescription": "Consul security group"
+                "GroupDescription": "Consul security group",
+                "SecurityGroupIngress": [
+                    {
+                        "CidrIp" : "0.0.0.0/0",
+                        "IpProtocol" : "-1",
+                        "FromPort" : 8000,
+                        "ToPort" : 9000
+                    }
+                ]
             }
         },
         "layerConsul": {
