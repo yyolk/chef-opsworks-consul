@@ -1,0 +1,222 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters": {
+        "VpcId" : {
+            "Type" : "String",
+            "Description" : "VPC Id"
+        },
+        "SubnetId1" : {
+            "Type" : "String",
+            "Description" : "AZ 1 subnet id"
+        },
+        "SubnetId2" : {
+            "Type" : "String",
+            "Description" : "AZ 2 subnet id"
+        },
+        "SubnetId3" : {
+            "Type" : "String",
+            "Description" : "AZ 3 subnet id"
+        },
+        "DefaultSshKeyName" : {
+            "Type" : "String",
+            "Description" : "The default ssh key name"
+        }
+    },
+    "Resources": {
+        "stack": {
+            "Type": "AWS::OpsWorks::Stack",
+            "Properties": {
+                "Name": {
+                    "Ref": "AWS::StackName"
+                },
+                "UseCustomCookbooks": "true",
+                "CustomCookbooksSource": {
+                    "Type": "git",
+                    "Url": "https://github.com/hautelook/chef-opsworks-consul.git"
+                },
+                "ChefConfiguration": {
+                    "BerkshelfVersion": "3.1.3",
+                    "ManageBerkshelf": true
+                },
+                "ConfigurationManager": {
+                    "Name": "Chef",
+                    "Version": "11.10"
+                },
+                "VpcId": {
+                    "Ref": "VpcId"
+                },
+                "DefaultSubnetId": {
+                    "Ref": "SubnetId1"
+                },
+                "DefaultSshKeyName": {
+                    "Ref": "DefaultSshKeyName"
+                },
+                "DefaultRootDeviceType": "instance-store",
+                "DefaultOs": "Amazon Linux 2014.09",
+                "ServiceRoleArn": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "arn:aws:iam::",
+                            {
+                                "Ref": "AWS::AccountId"
+                            },
+                            ":role/aws-opsworks-service-role"
+                        ]
+                    ]
+                },
+                "DefaultInstanceProfileArn": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "arn:aws:iam::",
+                            {
+                                "Ref": "AWS::AccountId"
+                            },
+                            ":instance-profile/aws-opsworks-ec2-role"
+                        ]
+                    ]
+                }
+            }
+        },
+        "sgConsul": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VpcId"
+                },
+                "GroupDescription": "Consul security group"
+            }
+        },
+        "layerConsul": {
+            "Type": "AWS::OpsWorks::Layer",
+            "Properties": {
+                "StackId": {
+                    "Ref": "stack"
+                },
+                "Name": "Consul",
+                "Type": "custom",
+                "Shortname": "consul",
+                "CustomRecipes": {
+                    "Setup": [
+                        "opsworks_consul::setup"
+                    ]
+                },
+                "EnableAutoHealing": "true",
+                "AutoAssignElasticIps": "false",
+                "AutoAssignPublicIps": "false",
+                "VolumeConfigurations": [
+                    {
+                        "MountPoint": "/var/lib/consul",
+                        "NumberOfDisks": 2,
+                        "RaidLevel": 1,
+                        "Size": 10
+                    }
+                ],
+                "CustomSecurityGroupIds": [
+                    {
+                        "Fn::GetAtt": [
+                            "sgConsul",
+                            "GroupId"
+                        ]
+                    }
+                ]
+            }
+        },
+        "layerConsulBootstrap": {
+            "Type": "AWS::OpsWorks::Layer",
+            "Properties": {
+                "StackId": {
+                    "Ref": "stack"
+                },
+                "Name": "Consul Bootstrap",
+                "Type": "custom",
+                "Shortname": "consul-bootstrap",
+                "CustomRecipes": {
+                    "Setup": [
+                        "opsworks_consul::setup"
+                    ]
+                },
+                "EnableAutoHealing": "true",
+                "AutoAssignElasticIps": "false",
+                "AutoAssignPublicIps": "false",
+                "CustomSecurityGroupIds": [
+                    {
+                        "Fn::GetAtt": [
+                            "sgConsul",
+                            "GroupId"
+                        ]
+                    }
+                ]
+            }
+        },
+        "instanceBootstrap": {
+            "Type": "AWS::OpsWorks::Instance",
+            "Properties": {
+                "StackId": {
+                    "Ref": "stack"
+                },
+                "LayerIds": [
+                    {
+                        "Ref": "layerConsulBootstrap"
+                    }
+                ],
+                "InstanceType": "m3.medium"
+            }
+        },
+        "instanceConsul1": {
+            "Type": "AWS::OpsWorks::Instance",
+            "Properties": {
+                "StackId": {
+                    "Ref": "stack"
+                },
+                "LayerIds": [
+                    {
+                        "Ref": "layerConsul"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "SubnetId1"
+                },
+                "InstanceType": "m3.medium"
+            },
+            "DependsOn" : "instanceBootstrap"
+        },
+        "instanceConsul2": {
+            "Type": "AWS::OpsWorks::Instance",
+            "Properties": {
+                "StackId": {
+                    "Ref": "stack"
+                },
+                "LayerIds": [
+                    {
+                        "Ref": "layerConsul"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "SubnetId2"
+                },
+                "InstanceType": "m3.medium"
+            },
+            "DependsOn" : "instanceBootstrap"
+        },
+        "instanceConsul3": {
+            "Type": "AWS::OpsWorks::Instance",
+            "Properties": {
+                "StackId": {
+                    "Ref": "stack"
+                },
+                "LayerIds": [
+                    {
+                        "Ref": "layerConsul"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "SubnetId3"
+                },
+                "InstanceType": "m3.medium"
+            },
+            "DependsOn" : "instanceBootstrap"
+        }
+    }
+}
