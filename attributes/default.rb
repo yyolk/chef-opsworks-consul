@@ -1,6 +1,8 @@
 default[:opsworks_consul][:layers][:cluster] = 'consul'
 default[:opsworks_consul][:layers][:bootstrap] = 'consul-bootstrap'
 
+set[:consul][:serve_ui] = true
+
 bootstrap_layer = default[:opsworks_consul][:layers][:bootstrap]
 
 if node[:opsworks][:instance][:layers].include?(bootstrap_layer)
