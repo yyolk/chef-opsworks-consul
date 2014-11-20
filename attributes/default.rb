@@ -10,8 +10,7 @@ if node[:opsworks][:instance][:layers].include?(bootstrap_layer)
 else
   set[:consul][:service_mode] = 'cluster'
   set[:consul][:bootstrap_expect] = 2 # make sure our cluster nodes are not started as bootstrap
-end
-
-set[:consul][:servers] = node[:opsworks][:layers][bootstrap_layer].map do |name, instance|
-  instance[:private_ip]
+  set[:consul][:servers] = node[:opsworks][:layers][bootstrap_layer][:instances].map do |name, instance|
+    instance[:private_ip]
+  end
 end
