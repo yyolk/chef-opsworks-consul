@@ -43,7 +43,7 @@
                 "DefaultSshKeyName": {
                     "Ref": "DefaultSshKeyName"
                 },
-                "DefaultRootDeviceType": "instance-store",
+                "DefaultRootDeviceType": "ebs",
                 "DefaultOs": "Amazon Linux 2014.09",
                 "ServiceRoleArn": {
                     "Fn::Join": [
