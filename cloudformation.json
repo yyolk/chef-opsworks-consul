@@ -103,6 +103,9 @@
                         "consul::ui",
                         "opsworks_consul::route53_register"
                     ],
+                    "Configure": [
+                        "consul::_service"
+                    ],
                     "Shutdown": [
                         "opsworks_consul::route53_unregister"
                     ]
