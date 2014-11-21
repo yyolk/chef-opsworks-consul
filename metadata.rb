@@ -7,3 +7,4 @@ long_description 'Consul OpsWorks'
 version          '0.1.0'
 
 depends 'consul'
+depends 'route53'

@@ -1,5 +1,7 @@
 default[:opsworks_consul][:layers][:cluster] = 'consul'
 default[:opsworks_consul][:layers][:bootstrap] = 'consul-bootstrap'
+default[:opsworks_consul][:route_53][:zone_id] = nil
+default[:opsworks_consul][:route_53][:domain] = 'region.aws.company.com'
 
 set[:consul][:serve_ui] = true
 

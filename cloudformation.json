@@ -99,7 +99,11 @@
                 "Shortname": "consul",
                 "CustomRecipes": {
                     "Setup": [
-                        "opsworks_consul::setup"
+                        "opsworks_consul::setup",
+                        "opsworks_consul::route53_register"
+                    ],
+                    "Shutdown": [
+                        "opsworks_consul::route53_unregister"
                     ]
                 },
                 "EnableAutoHealing": "true",
