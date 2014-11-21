@@ -99,7 +99,8 @@
                 "Shortname": "consul",
                 "CustomRecipes": {
                     "Setup": [
-                        "opsworks_consul::setup",
+                        "consul",
+                        "consul::ui",
                         "opsworks_consul::route53_register"
                     ],
                     "Shutdown": [
@@ -117,36 +118,6 @@
                         "Size": 10
                     }
                 ],
-                "CustomSecurityGroupIds": [
-                    {
-                        "Fn::GetAtt": [
-                            "sgConsul",
-                            "GroupId"
-                        ]
-                    }
-                ]
-            }
-        },
-        "layerConsulBootstrap": {
-            "Type": "AWS::OpsWorks::Layer",
-            "Properties": {
-                "StackId": {
-                    "Ref": "stack"
-                },
-                "Name": "Consul Bootstrap",
-                "Type": "custom",
-                "Shortname": "consul-bootstrap",
-                "CustomRecipes": {
-                    "Setup": [
-                        "opsworks_consul::setup"
-                    ],
-                    "Shutdown": [
-                        "opsworks_consul::consul_leave"
-                    ]
-                },
-                "EnableAutoHealing": "true",
-                "AutoAssignElasticIps": "false",
-                "AutoAssignPublicIps": "false",
                 "CustomSecurityGroupIds": [
                     {
                         "Fn::GetAtt": [

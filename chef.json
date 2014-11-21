@@ -1,5 +1,6 @@
 {
     "consul": {
-        "datacenter": "dc1"
+        "datacenter": "dc1",
+        "bootstrap_expect": 3
     }
 }
