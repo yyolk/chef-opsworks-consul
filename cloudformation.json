@@ -5,17 +5,9 @@
             "Type" : "String",
             "Description" : "VPC Id"
         },
-        "SubnetId1" : {
+        "DefaultSubnetId" : {
             "Type" : "String",
             "Description" : "AZ 1 subnet id"
-        },
-        "SubnetId2" : {
-            "Type" : "String",
-            "Description" : "AZ 2 subnet id"
-        },
-        "SubnetId3" : {
-            "Type" : "String",
-            "Description" : "AZ 3 subnet id"
         },
         "DefaultSshKeyName" : {
             "Type" : "String",
@@ -46,7 +38,7 @@
                     "Ref": "VpcId"
                 },
                 "DefaultSubnetId": {
-                    "Ref": "SubnetId1"
+                    "Ref": "DefaultSubnetId"
                 },
                 "DefaultSshKeyName": {
                     "Ref": "DefaultSshKeyName"
@@ -157,74 +149,6 @@
                     }
                 ]
             }
-        },
-        "instanceBootstrap": {
-            "Type": "AWS::OpsWorks::Instance",
-            "Properties": {
-                "StackId": {
-                    "Ref": "stack"
-                },
-                "LayerIds": [
-                    {
-                        "Ref": "layerConsulBootstrap"
-                    }
-                ],
-                "InstanceType": "m3.medium"
-            }
-        },
-        "instanceConsul1": {
-            "Type": "AWS::OpsWorks::Instance",
-            "Properties": {
-                "StackId": {
-                    "Ref": "stack"
-                },
-                "LayerIds": [
-                    {
-                        "Ref": "layerConsul"
-                    }
-                ],
-                "SubnetId": {
-                    "Ref": "SubnetId1"
-                },
-                "InstanceType": "m3.medium"
-            },
-            "DependsOn" : "instanceBootstrap"
-        },
-        "instanceConsul2": {
-            "Type": "AWS::OpsWorks::Instance",
-            "Properties": {
-                "StackId": {
-                    "Ref": "stack"
-                },
-                "LayerIds": [
-                    {
-                        "Ref": "layerConsul"
-                    }
-                ],
-                "SubnetId": {
-                    "Ref": "SubnetId2"
-                },
-                "InstanceType": "m3.medium"
-            },
-            "DependsOn" : "instanceBootstrap"
-        },
-        "instanceConsul3": {
-            "Type": "AWS::OpsWorks::Instance",
-            "Properties": {
-                "StackId": {
-                    "Ref": "stack"
-                },
-                "LayerIds": [
-                    {
-                        "Ref": "layerConsul"
-                    }
-                ],
-                "SubnetId": {
-                    "Ref": "SubnetId3"
-                },
-                "InstanceType": "m3.medium"
-            },
-            "DependsOn" : "instanceBootstrap"
         }
     }
 }
