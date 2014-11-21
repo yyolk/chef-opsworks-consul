@@ -3,6 +3,9 @@ default[:opsworks_consul][:layers][:bootstrap] = 'consul-bootstrap'
 
 set[:consul][:serve_ui] = true
 
+# avoid node name collision across stacks/dc
+set[:consul][:node_name] = node[:opsworks][:instance][:private_ip].gsub(/[^\d]/, '-')
+
 bootstrap_layer = default[:opsworks_consul][:layers][:bootstrap]
 cluster_layer = default[:opsworks_consul][:layers][:cluster]
 
