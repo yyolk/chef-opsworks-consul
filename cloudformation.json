@@ -139,6 +139,9 @@
                 "CustomRecipes": {
                     "Setup": [
                         "opsworks_consul::setup"
+                    ],
+                    "Shutdown": [
+                        "opsworks_consul::consul_leave"
                     ]
                 },
                 "EnableAutoHealing": "true",
